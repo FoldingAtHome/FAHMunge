@@ -12,13 +12,13 @@ import fahmunge
 
 # Reads in a list of project details from a CSV file with Core17/18 FAH projects and munges them.
 
-def setup_worker(terminate_event, delete_on_unpack, compress_xml):
+def setup_worker(terminate_event, delete_on_unpack, xml_handling):
     global global_terminate_event
     global_terminate_event = terminate_event
     global global_delete_on_unpack
     global_delete_on_unpack = delete_on_unpack
-    global global_compress_xml
-    global_compress_xml = compress_xml
+    global xml_handling
+    global_xml_handling = xml_handling
 
 def worker(args):
     return fahmunge.core21.process_core21_clone(*args, terminate_event=global_terminate_event, delete_on_unpack=global_delete_on_unpack, compress_xml=global_compress_xml)
@@ -36,7 +36,7 @@ def main():
         help='Number of threads to use (default: 1)')
     parser.add_argument('-d', '--debug', dest='debug', action='store_true', default=False,
         help='Run in serial mode and turn on debug output')
-    parser.add_argument('-u', '--unpack', dest='delete_on_unpack', action='store_true', default=False,
+    parser.add_argument('-z', '--delete-tarballs', dest='delete_on_unpack', action='store_true', default=False,
         help='Delete original results-###.tar.bz2 after unpacking; WARNING: THIS IS DANGEROUS AND COULD DELETE YOUR PRIMARY DATA.')
     parser.add_argument('-t', '--time', metavar='TIME', dest='time_limit', action='store', type=int, default=None,
         help='Process each project for no more than specified time (in seconds) before moving on to next project')
@@ -46,8 +46,8 @@ def main():
         help='Sleep for specified time (in seconds) between iterations (default: 0)')
     parser.add_argument('-v', '--version', action='store_true', default=False,
         help='Print version information and exit')
-    parser.add_argument('-c', '--compress-xml', dest='compress_xml', action='store_true', default=False,
-        help='If specified, will compress XML data')
+    parser.add_argument('-x', '--xml', dest='xml_handling', action='store', default='compress',
+        help='How to handle old WS style .xml files: "compress" (default) or "delete"')
     args = parser.parse_args()
 
     if args.version:
@@ -175,7 +175,7 @@ def main():
             print('Using serial debug mode')
             print('----------' * 8)
             for packed_args in clones_to_process:
-                fahmunge.core21.process_core21_clone(*packed_args, delete_on_unpack=args.delete_on_unpack, compress_xml=args.compress_xml, signal_handler=signal_handler)
+                fahmunge.core21.process_core21_clone(*packed_args, delete_on_unpack=args.delete_on_unpack, xml_handling=args.xml_handling, signal_handler=signal_handler)
                 # Terminate if instructed
                 if signal_handler.terminate:
                     print('Signal caught; terminating.')
@@ -187,7 +187,7 @@ def main():
             from multiprocessing import Pool, Event
             print("Creating thread pool of %d threads..." % args.nprocesses)
             terminate_event = Event()
-            pool = Pool(args.nprocesses, setup_worker, (terminate_event, args.delete_on_unpack, args.compress_xml))
+            pool = Pool(args.nprocesses, setup_worker, (terminate_event, args.delete_on_unpack, args.xml_handling))
 
 
             try:

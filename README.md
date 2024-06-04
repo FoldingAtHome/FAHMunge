@@ -64,14 +64,15 @@ More advanced usage allows additional arguments to be specified:
 * `--maxits <MAXITS>` will cause the munging pipeline to run for the specified number of iterations and then exit. This can be useful for debugging. Without specifying this option, munging will run indefinitely.
 * `--sleeptime <SLEEPTIME>` will cause munging to sleep for the specified number of seconds if no work was done in this iteration (default:3600).
 * `--validate` will validate the choice of `topology_selection` MDTraj DSL topology selection queries to make sure they are valid; note that this may take a significant amount of time, so is optional behavior
-* `--compress-xml` will compress `.xml` files after unpacking them from old-WS-style result packages to save space
+* `--xml compress` will compress `.xml` files after unpacking them from old-WS-style result packages to save space; `--xml delete` will delete `.xml` files after unpacking
+* `--delete-tarballs` will delete the old `.tar.bz2` WUs after unpacking them from old-WS-style result packages to save space
 
 #### Usage on `choderalab` Folding@home servers
 
 1.  Login to work server using the usual FAH login
 2.  Check if script is running (`screen -r -d`).  If True, stop here.
 3.  Start a screen session
-4.  Run with: `munge-fah-data --projects /data/choderalab/fah/projects.csv --outpath /data/choderalab/fah/munged-data --time 600 --nprocesses 16`
+4.  Run with: `munge-fah-data --projects /data/choderalab/fah/projects.csv --outpath /data/choderalab/fah/munged-data --time 600 --nprocesses 16 --delete-on-unpack --xml compress`
 5.  To stop, control c when the script is in the "sleep" phase
 
 #### How it works

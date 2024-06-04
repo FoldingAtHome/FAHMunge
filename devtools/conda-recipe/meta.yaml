@@ -15,7 +15,7 @@ requirements:
   build:
     - setuptools
     - python
-    
+
   run:
     - python
     - numpy
@@ -41,10 +41,10 @@ test:
     # Test parallel
     - echo "Testing parallel processing"
     - rm -rf munged
-    - munge-fah-data --projects projects.csv --outpath munged --maxits 1 --validate --nprocesses 2 --compress-xml
+    - munge-fah-data --projects projects.csv --outpath munged --maxits 1 --validate --nprocesses 2 --xml compress
     # Test restart after unpacking (shouldn't actually do anything)
     - echo "Testing additional processing iterations"
-    - munge-fah-data --projects projects.csv --outpath munged --maxits 1 --validate --nprocesses 2
+    - munge-fah-data --projects projects.csv --outpath munged --maxits 1 --validate --nprocesses 2  --xml compress
     - munge-fah-data --projects projects.csv --outpath munged --maxits 1
     - munge-fah-data --projects projects.csv --outpath munged --maxits 2 --sleeptime 1
     # TODO: Test to make sure expected output is found
@@ -79,8 +79,8 @@ test:
     - rm -rf PROJ11507/RUN?/CLONE?/results?
     - rm -rf PROJ11419/RUN?/CLONE?/results?
     # Test parallel with permanent deletion
-    - echo "Testing irreversible unpacking"
-    - munge-fah-data --projects projects.csv --outpath munged --maxits 1 --nprocesses 2 --unpack
+    - echo "Testing irreversible unpacking with deletion of unpacked XML files"
+    - munge-fah-data --projects projects.csv --outpath munged --maxits 1 --nprocesses 2 --xml delete --delete-tarballs
 
 about:
   home: https://github.com/choderalab/fahmunge
